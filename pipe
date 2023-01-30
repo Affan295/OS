@@ -1,0 +1,55 @@
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main() {
+    int fd[2];
+    pid_t pid;
+    char buffer[20];
+
+    // Create the pipe
+    if (pipe(fd) == -1) {
+        perror("pipe");
+        exit(EXIT_FAILURE);
+    }
+
+    // Fork the process
+    pid = fork();
+    if (pid == -1) {
+        perror("fork");
+        exit(EXIT_FAILURE);
+    }
+
+    // Child process
+    if (pid == 0) {
+        close(fd[0]); // Close the read end of the pipe
+
+        // Write a message to the pipe
+        write(fd[1], "Hello, Parent!", 15);
+        exit(EXIT_SUCCESS);
+    }
+    // Parent process
+    else {
+        close(fd[1]); // Close the write end of the pipe
+
+        // Read the message from the pipe
+        read(fd[0], buffer, 20);
+        printf("Received message: %s\n", buffer);
+        wait(NULL);  // wait for child process to finish
+    }
+    return 0;
+}
+
+
+OUTPUT:
+Received message: Hello, Parent!
+
+This code creates a pipe using the pipe() system call, forks the process using the fork() system call, 
+and has the child process write a message to the pipe and the parent process read the message from the pipe.
+
+This is just one example of using IPC mechanisms. 
+Please note that this is a basic example and it is not handling any error cases or validating input.
+
+You can use similar approach to implement other IPC mechanisms like named pipes, message queues, shared memory and semaphores, 
+but the system calls used to create and communicate through them would be different.
