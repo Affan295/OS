@@ -1,0 +1,88 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/wait.h>
+
+int main() {
+    pid_t pid;
+    int status;
+    pid = fork(); // create child process
+
+    if (pid == 0) {
+        // child process
+        printf("Child process with pid %d has started\n", getpid());
+        sleep(5); // sleep for 5 seconds
+        printf("Child process with pid %d has finished\n", getpid());
+        exit(0); // exit child process
+    } else {
+        // parent process
+        printf("Parent process with pid %d\n", getpid());
+        // parent process exits without calling wait()
+    }
+
+    return 0;
+}
+
+OUTPUT:
+
+Parent process with pid 347
+Child process with pid 348 has started
+Child process with pid 348 has finished
+
+
+
+/* the best practise 
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/wait.h>
+
+int main() {
+    pid_t pid;
+    int status;
+    pid = fork(); // create child process
+
+    if (pid == 0) {
+        // child process
+        printf("Child process with pid %d has started\n", getpid());
+        sleep(5); // sleep for 5 seconds
+        printf("Child process with pid %d has finished\n", getpid());
+        exit(0); // exit child process
+    } else {
+        // parent process
+        printf("Parent process with pid %d\n", getpid());
+        wait(&status); // parent process waits for child process to exit
+    }
+
+    return 0;
+}
+*/
+
+
+OUTPUT:
+arent process with pid 787
+Child process with pid 788 has started
+Child process with pid 788 has finished
+
+
+/*
+summary
+In this program, the parent process creates a child process using the fork() system call. 
+The child process sleeps for 5 seconds and then exits. 
+The parent process then calls the wait() system call to wait for the child process to exit and collect its exit status. 
+
+This way, the child process is not left in a zombies state and the resources it was using are properly freed up.
+
+In this way, the parent process will wait for child process to exit and collect its exit status, 
+so the child process will not be in a zombies state and the resources it was using will be properly freed up.
+
+
+*/
+
+
+
+
+
+
